@@ -1,0 +1,100 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+using namespace std;
+
+// Step 1: Structure Definition
+struct Order {
+    int orderId;
+    string customerName;
+    int itemCount;
+    float pricePerItem;
+};
+
+// Step 4: Function to calculate total bill
+float calculateTotal(int items, float price) {
+    return items * price;
+}
+
+int main() {
+    int n;
+    vector<Order> orders;
+
+    // Step 3: Input orders
+    cout << "Enter total number of orders: ";
+    cin >> n;
+
+    for (int i = 0; i < n; i++) {
+        Order o;
+
+        cout << "\nEnter Order ID: ";
+        cin >> o.orderId;
+
+        cout << "Enter Customer Name: ";
+        cin >> o.customerName;
+
+        // Step 7: Validation
+        do {
+            cout << "Enter Number of Items: ";
+            cin >> o.itemCount;
+        } while (o.itemCount <= 0);
+
+        do {
+            cout << "Enter Price per Item: ";
+            cin >> o.pricePerItem;
+        } while (o.pricePerItem <= 0);
+
+        orders.push_back(o);
+    }
+
+    // Step 5: File writing
+    ofstream fout("priority_orders.txt");
+
+    if (!fout) {
+        cout << "Error opening file for writing.\n";
+        return 1;
+    }
+
+    for (int i = 0; i < orders.size(); i++) {
+        float totalAmount = calculateTotal(
+            orders[i].itemCount,
+            orders[i].pricePerItem
+        );
+
+        if (totalAmount > 5000) {
+            fout << orders[i].orderId << " "
+                 << orders[i].customerName << " "
+                 << orders[i].itemCount << " "
+                 << orders[i].pricePerItem << " "
+                 << totalAmount << endl;
+        }
+    }
+
+    fout.close();
+    cout << "\nPriority orders saved successfully.\n";
+
+    // Step 6: File reading
+    ifstream fin("priority_orders.txt");
+
+    if (!fin) {
+        cout << "Error opening file for reading.\n";
+        return 1;
+    }
+
+    cout << "\n--- Priority Orders (Total > 5000) ---\n";
+    int id, items;
+    string name;
+    float price, total;
+
+    while (fin >> id >> name >> items >> price >> total) {
+        cout << "Order ID: " << id
+             << ", Customer: " << name
+             << ", Items: " << items
+             << ", Price/Item: " << price
+             << ", Total: " << total << endl;
+    }
+
+    fin.close();
+
+    return 0;
+}
